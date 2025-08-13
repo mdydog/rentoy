@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Marcador rentoy</title>
+    <style>
+      :root {
+        --primary: #0d6efd;
+        --bg: #f9f9f9;
+        --text: #333;
+        --border: #ddd;
+        --circle-color: #222;
+      }
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background: var(--bg);
+        padding: 30px;
+        margin: 0;
+        color: var(--text);
+      }
+      h1 {
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 28px;
+        color: var(--primary);
+      }
+
+      .topbar {
+        display: flex;
+        justify-content: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        margin-bottom: 14px;
+      }
+      .topbar button,
+      .topbar input {
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+      }
+      .topbar .btn-primary {
+        background-color: var(--primary);
+        color: #fff;
+        border: none;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .pill {
+        background: #eef4ff;
+        border: 1px solid #cfe0ff;
+        color: #274690;
+        padding: 8px 12px;
+        border-radius: 999px;
+        font-size: 13px;
+      }
+
+      .name-selector {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-bottom: 14px;
+        flex-wrap: wrap;
+      }
+      .name-selector input {
+        padding: 10px 14px;
+        border-radius: 6px;
+        border: 1px solid var(--border);
+        font-size: 14px;
+        width: 180px;
+      }
+      .name-selector button {
+        padding: 10px 20px;
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+      }
+
+      .scoreboard {
+        display: grid;
+        grid-template-columns: 1fr 2px 1fr;
+        max-width: 900px;
+        margin: 0 auto;
+        border: 2px solid var(--border);
+        border-radius: 10px;
+        background: white;
+        overflow: hidden;
+      }
+      .divider {
+        background-color: var(--border);
+        width: 2px;
+      }
+      .team {
+        padding: 20px;
+      }
+      .team-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+        flex-wrap: wrap;
+        gap: 5px;
+      }
+      .team-header span {
+        font-size: 20px;
+        font-weight: bold;
+      }
+      .button {
+        width: 46px;
+        height: 38px;
+        font-size: 16px;
+        font-weight: bold;
+        cursor: pointer;
+        margin-left: 4px;
+        border: none;
+        border-radius: 6px;
+        color: white;
+        box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+      }
+      .button:hover {
+        transform: scale(1.05);
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.25);
+      }
+      .btn-green {
+        background-color: #28a745;
+      } /* verde */
+      .btn-minus {
+        background-color: #dc3545;
+      } /* rojo */
+      .reset-btn {
+        background-color: #ffc107;
+        color: #000;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        display: inline-block;
+        font-weight: bold;
+      }
+      .info-btn {
+        background-color: var(--primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        font-size: 14px;
+        border-radius: 6px;
+        cursor: pointer;
+        font-weight: bold;
+        margin-left: 8px;
+      }
+
+      .block {
+        border-top: 2px solid var(--border);
+        margin-top: 15px;
+        padding-top: 10px;
+      }
+      .point-row {
+        display: flex;
+        justify-content: flex-start;
+        gap: 30px;
+        margin-bottom: 10px;
+        flex-wrap: wrap;
+      }
+      .point-group {
+        text-align: center;
+        line-height: 1.2;
+        font-size: 22px;
+        color: var(--circle-color);
+      }
+
+      .legend {
+        max-width: 900px;
+        margin: 10px auto 20px;
+        text-align: center;
+      }
+      .legend .pill {
+        margin: 0 6px;
+      }
+
+      /* Modal */
+      .modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5);
+      }
+      .modal-content {
+        background-color: #fff;
+        margin: 8% auto;
+        padding: 20px;
+        border-radius: 10px;
+        width: 90%;
+        max-width: 520px;
+      }
+      .modal-content h2 {
+        margin-top: 0;
+      }
+      .close {
+        color: #555;
+        float: right;
+        font-size: 24px;
+        font-weight: bold;
+        cursor: pointer;
+      }
+      .close:hover {
+        color: black;
+      }
+
+      @media (max-width: 768px) {
+        .scoreboard {
+          grid-template-columns: 1fr;
+        }
+        .divider {
+          display: none;
+        }
+        .team {
+          border-bottom: 2px solid var(--border);
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>La peña rumbera 2.0</h1>
+
+    <!-- Barra superior: crear/unirse sala -->
+    <!-- Barra superior: crear/unirse sala -->
+    <div class="topbar" id="roomControls">
+      <input
+        type="text"
+        id="customRoomId"
+        placeholder="ID de sala (opcional)"
+      />
+      <button class="btn-primary" onclick="crearSala()">Crear sala</button>
+      <button class="btn-primary" onclick="unirseSala()">Unirse a sala</button>
+    </div>
+
+    <div class="topbar" id="roomStatus" style="display: none">
+      <span id="roomBadge" class="pill"></span>
+      <span id="roleBadge" class="pill"></span>
+      <button id="copyIdBtn" class="btn-primary" onclick="copiarId()">
+        Copiar ID
+      </button>
+    </div>
+
+    <!-- Selector de nombres -->
+    <div class="name-selector">
+      <input type="text" id="nameTeam1" placeholder="Nombre Equipo 1" />
+      <input type="text" id="nameTeam2" placeholder="Nombre Equipo 2" />
+      <button onclick="setTeamNames()">Establecer nombres</button>
+    </div>
+
+    <!-- Botones globales -->
+    <div style="text-align: center; margin-bottom: 14px">
+      <button class="reset-btn" onclick="resetAll()">Resetear todo</button>
+      <button class="info-btn" onclick="openModal()">Info</button>
+    </div>
+
+    <!-- Marcador -->
+    <div class="scoreboard">
+      <!-- Equipo 1 -->
+      <div class="team">
+        <div class="team-header">
+          <span id="team1Name">Equipo 1</span>
+          <div>
+            <button class="button btn-green" onclick="addPoint('team1')">
+              +
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team1',3)"
+            >
+              +3
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team1',6)"
+            >
+              +6
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team1',9)"
+            >
+              +9
+            </button>
+            <button class="button btn-minus" onclick="removePoint('team1')">
+              −
+            </button>
+          </div>
+        </div>
+        <div id="team1Container"></div>
+      </div>
+
+      <div class="divider"></div>
+
+      <!-- Equipo 2 -->
+      <div class="team">
+        <div class="team-header">
+          <span id="team2Name">Equipo 2</span>
+          <div>
+            <button class="button btn-green" onclick="addPoint('team2')">
+              +
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team2',3)"
+            >
+              +3
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team2',6)"
+            >
+              +6
+            </button>
+            <button
+              class="button btn-green"
+              onclick="addCustomPoints('team2',9)"
+            >
+              +9
+            </button>
+            <button class="button btn-minus" onclick="removePoint('team2')">
+              −
+            </button>
+          </div>
+        </div>
+        <div id="team2Container"></div>
+      </div>
+    </div>
+
+    <!-- Modal Info (borra si ya tienes el tuyo) -->
+    <div id="infoModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2>Valores de las cartas</h2>
+        <h3>8 jugadores</h3>
+        <p>10 de oros - perica - mover cejas</p>
+        <p>5 de oros - pablo - inflar mofletes</p>
+        <h3>6 jugadores</h3>
+        <p>11 de oros - tuerto - guiñar ojo</p>
+        <p>3 de la muestra - andorra - mueca</p>
+        <p>2 de la muestra - malilla - sacar lengua</p>
+        <p>
+          12 de la muestra hasta el 4 de la muestra (el 1 vale 7,5 ya que no
+          existen 8s ni 9s) - pincho - levantar hombro
+        </p>
+        <p>Si no tienes nada de eso - ciego - cerrar ojos</p>
+      </div>
+    </div>
+
+    <!-- Socket.IO -->
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+      // ================== Estado y constantes ==================
+      const MAX_POINTS = 24,
+        BLOCK_SIZE = 12,
+        GROUP_SIZE = 3;
+      let teamPoints = { team1: 0, team2: 0 };
+      let teamNames = { team1: "Equipo 1", team2: "Equipo 2" };
+
+      const socket = io();
+      let idSala = null;
+      let soyAdmin = false;
+      let enSala = false;
+
+      // ================== Utilidades de UI ==================
+      function updateBadges() {
+        const roomBadge = document.getElementById("roomBadge");
+        const roleBadge = document.getElementById("roleBadge");
+        const copyBtn = document.getElementById("copyIdBtn");
+
+        if (enSala && idSala) {
+          roomBadge.style.display = "inline-block";
+          roomBadge.textContent = `Sala: ${idSala}`;
+          copyBtn.style.display = soyAdmin ? "inline-block" : "none";
+        } else {
+          roomBadge.style.display = "none";
+          copyBtn.style.display = "none";
+        }
+        roleBadge.style.display = enSala ? "inline-block" : "none";
+        roleBadge.textContent = soyAdmin
+          ? "Rol: Administrador"
+          : "Rol: Espectador";
+      }
+
+      function updateControls() {
+        const disabled = !soyAdmin || !enSala;
+        document.querySelectorAll(".button, .reset-btn").forEach((btn) => {
+          btn.disabled = disabled;
+        });
+        document
+          .querySelectorAll(".name-selector input, .name-selector button")
+          .forEach((el) => {
+            el.disabled = disabled;
+          });
+        // El botón Info siempre activo
+        document.querySelectorAll(".info-btn").forEach((btn) => {
+          btn.disabled = false;
+        });
+      }
+
+      function copiarId() {
+        if (!idSala) return;
+        navigator.clipboard.writeText(idSala).then(() => {
+          alert("ID copiado al portapapeles");
+        });
+      }
+
+      // ================== Sala (crear / unirse) ==================
+      function crearSala() {
+        soyAdmin = true;
+        const customId = document.getElementById("customRoomId").value.trim();
+        socket.emit("createRoom", { customId: customId || null });
+      }
+
+      function unirseSala() {
+        const id =
+          document.getElementById("customRoomId").value.trim() ||
+          prompt("Introduce el ID de la sala");
+        if (!id) return;
+        soyAdmin = false;
+        socket.emit("joinRoom", { idSala: id.trim().toUpperCase() });
+      }
+
+      socket.on("roomCreated", ({ idSala: id }) => {
+        idSala = id;
+        enSala = true;
+        mostrarEstadoSala();
+        alert("Sala creada. Comparte este ID: " + idSala);
+      });
+
+      function mostrarEstadoSala() {
+        document.getElementById("roomControls").style.display = "none";
+        document.getElementById("roomStatus").style.display = "flex";
+        updateBadges();
+        updateControls();
+      }
+
+      socket.on("roomError", (msg) => alert(msg));
+
+      socket.on("state", (state) => {
+        teamPoints = state.puntos;
+        teamNames = state.nombres;
+        document.getElementById("team1Name").textContent = teamNames.team1;
+        document.getElementById("team2Name").textContent = teamNames.team2;
+        document.getElementById("nameTeam1").value = teamNames.team1;
+        document.getElementById("nameTeam2").value = teamNames.team2;
+        renderTeam("team1");
+        renderTeam("team2");
+        if (!enSala) {
+          enSala = true;
+          mostrarEstadoSala();
+        }
+      });
+
+      socket.on("notAuthorized", () => {
+        alert("No estás autorizado para modificar esta sala.");
+      });
+
+      // Auto-join por URL (?room=XXXX&admin=1)
+      window.addEventListener("DOMContentLoaded", () => {
+        const params = new URLSearchParams(window.location.search);
+        const roomFromUrl = params.get("room");
+        const adminFromUrl = params.get("admin");
+        if (roomFromUrl) {
+          idSala = roomFromUrl.toUpperCase();
+          soyAdmin = adminFromUrl === "1";
+          socket.emit("joinRoom", { idSala });
+        }
+      });
+
+      // ================== Lógica del marcador ==================
+      function broadcast() {
+        if (enSala && soyAdmin) {
+          socket.emit("updateState", {
+            puntos: teamPoints,
+            nombres: teamNames,
+          });
+        }
+      }
+
+      function setTeamNames() {
+        if (!soyAdmin) return;
+        const name1 = document.getElementById("nameTeam1").value.trim();
+        const name2 = document.getElementById("nameTeam2").value.trim();
+        if (name1) {
+          teamNames.team1 = name1;
+          document.getElementById("team1Name").textContent = name1;
+        }
+        if (name2) {
+          teamNames.team2 = name2;
+          document.getElementById("team2Name").textContent = name2;
+        }
+        broadcast();
+      }
+
+      function addPoint(team) {
+        if (!soyAdmin) return;
+        if (teamPoints[team] < MAX_POINTS) {
+          teamPoints[team]++;
+          renderTeam(team);
+          broadcast();
+        }
+      }
+      function addCustomPoints(team, value) {
+        if (!soyAdmin) return;
+        teamPoints[team] = Math.min(MAX_POINTS, teamPoints[team] + value);
+        renderTeam(team);
+        broadcast();
+      }
+      function removePoint(team) {
+        if (!soyAdmin) return;
+        if (teamPoints[team] > 0) {
+          teamPoints[team]--;
+          renderTeam(team);
+          broadcast();
+        }
+      }
+      function resetAll() {
+        if (!soyAdmin) return;
+        teamPoints = { team1: 0, team2: 0 };
+        teamNames = { team1: "Equipo 1", team2: "Equipo 2" };
+        document.getElementById("team1Name").textContent = teamNames.team1;
+        document.getElementById("team2Name").textContent = teamNames.team2;
+        document.getElementById("nameTeam1").value = teamNames.team1;
+        document.getElementById("nameTeam2").value = teamNames.team2;
+        renderTeam("team1");
+        renderTeam("team2");
+        broadcast();
+      }
+
+      function renderTeam(team) {
+        const container = document.getElementById(`${team}Container`);
+        container.innerHTML = "";
+        const totalPoints = teamPoints[team];
+        const totalBlocks = Math.ceil(totalPoints / BLOCK_SIZE);
+        let remaining = totalPoints;
+        for (let blockIndex = 0; blockIndex < totalBlocks; blockIndex++) {
+          const blockPoints = Math.min(remaining, BLOCK_SIZE);
+          const block = document.createElement("div");
+          block.className = "block";
+          const row = document.createElement("div");
+          row.className = "point-row";
+          for (let i = 0; i < blockPoints; i += GROUP_SIZE) {
+            const group = document.createElement("div");
+            group.className = "point-group";
+            const remainingInGroup = Math.min(GROUP_SIZE, blockPoints - i);
+            for (let j = 0; j < remainingInGroup; j++) {
+              group.innerHTML += j === 1 ? "|<br>" : "●<br>";
+            }
+            row.appendChild(group);
+          }
+          block.appendChild(row);
+          container.appendChild(block);
+          remaining -= blockPoints;
+        }
+      }
+
+      // ================== Modal Info ==================
+      function openModal() {
+        document.getElementById("infoModal").style.display = "block";
+      }
+      function closeModal() {
+        document.getElementById("infoModal").style.display = "none";
+      }
+      window.onclick = function (e) {
+        const m = document.getElementById("infoModal");
+        if (e.target === m) closeModal();
+      };
+    </script>
+  </body>
+</html>
